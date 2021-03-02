@@ -68,7 +68,6 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id');
-    // const id = 'test123';
     var socket = io({
         auth:{
             token: id
@@ -77,7 +76,6 @@
 
     socket.on('connect', ()=> {
         if(socket.connected){
-            console.log('joining room')
             socket.emit('join room');
         }
     })
@@ -91,6 +89,16 @@
             <div>`;
         socket.disconnect();
     });
+    socket.on('finished', ()=>{
+        const msg = "Thank you for participating!"
+        document.body.innerHTML=`
+            <div class="error-msg">
+                <h1>
+                    ${msg}
+                </h1>
+            <div>`;
+        socket.disconnect();
+    })
 
     socket.on('room size changed', (data)=>{
         console.log(data);
