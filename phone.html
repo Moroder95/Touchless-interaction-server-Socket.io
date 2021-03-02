@@ -74,7 +74,14 @@
             token: id
         }
     });
-    socket.emit('join room')
+    document.onload(()=>{
+        if( socket){
+            console.log('joining room')
+            socket.emit('join room');
+        }
+    })
+    
+
     socket.on('error', ({ msg })=>{
         document.body.innerHTML=`
             <div class="error-msg">
@@ -84,6 +91,7 @@
                     ${msg}
                 </h1>
             <div>`;
+        socket.disconnect();
     });
     socket.on('room size changed', (data)=>{
         console.log(data);

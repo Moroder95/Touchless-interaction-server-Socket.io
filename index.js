@@ -54,6 +54,7 @@ io.on('connection', (socket) => {
             inRoom= true;
             socket.join(roomID);
             rooms[roomID] += 1;
+            return;
         }else if(rooms[roomID] === undefined ){
             msg = 'Host screen isn\'t available.'
             
