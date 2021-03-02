@@ -68,22 +68,38 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id');
-    // const id = 'test123';
     var socket = io({
         auth:{
             token: id
         }
     });
+
+    socket.on('connect', ()=> {
+        if(socket.connected){
+            socket.emit('join room');
+        }
+    })
     socket.on('error', ({ msg })=>{
         document.body.innerHTML=`
             <div class="error-msg">
-                
                 <h1>
                     <span>ERROR:</span> <br>
                     ${msg}
                 </h1>
             <div>`;
+        socket.disconnect();
     });
+    socket.on('finished', ()=>{
+        const msg = "Thank you for participating!"
+        document.body.innerHTML=`
+            <div class="error-msg">
+                <h1>
+                    ${msg}
+                </h1>
+            <div>`;
+        socket.disconnect();
+    })
+
     socket.on('room size changed', (data)=>{
         console.log(data);
     });
