@@ -62,7 +62,7 @@ io.on('connection', (socket) => {
 io.on('disconnect', (socket)=>{
     console.log(socket.id, 'has disconnected')
 })
-
-http.listen( process.env.PORT || 3001, () => {
-  console.log(`listening on *:${process.env.PORT || 3001}`);
+const port = process.env.PORT || 3001
+http.listen( port, () => {
+  console.log(`listening on *:${port}`);
 });
