@@ -55,7 +55,7 @@ io.on('connection', (socket) => {
             socket.join(roomID);
             rooms[roomID] += 1;
             return;
-        }else if(rooms[roomID] === undefined ){
+        }else if(rooms[roomID] === undefined || rooms[roomID] <=0 ){
             msg = 'Host screen isn\'t available.'
             
         }else if(rooms[roomID] >= 2){

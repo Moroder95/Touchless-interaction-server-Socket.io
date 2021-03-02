@@ -74,11 +74,6 @@
             token: id
         }
     });
-    document.onload = ()=>{
-        if(socket){
-            
-        }
-    }
 
     socket.on('connect', ()=> {
         if(socket.connected){
@@ -89,7 +84,6 @@
     socket.on('error', ({ msg })=>{
         document.body.innerHTML=`
             <div class="error-msg">
-                
                 <h1>
                     <span>ERROR:</span> <br>
                     ${msg}
