@@ -74,6 +74,7 @@
             token: id
         }
     });
+    socket.emit('join room')
     socket.on('error', ({ msg })=>{
         document.body.innerHTML=`
             <div class="error-msg">
