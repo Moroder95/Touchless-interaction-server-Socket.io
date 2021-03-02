@@ -74,12 +74,12 @@
             token: id
         }
     });
-    document.onload(()=>{
-        if( socket){
+    document.onload = ()=>{
+        if(socket){
             console.log('joining room')
             socket.emit('join room');
         }
-    })
+    }
     
 
     socket.on('error', ({ msg })=>{
@@ -93,6 +93,7 @@
             <div>`;
         socket.disconnect();
     });
+    
     socket.on('room size changed', (data)=>{
         console.log(data);
     });
