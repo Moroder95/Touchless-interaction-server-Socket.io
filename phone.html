@@ -76,12 +76,16 @@
     });
     document.onload = ()=>{
         if(socket){
+            
+        }
+    }
+
+    socket.on('connect', ()=> {
+        if(socket.connected){
             console.log('joining room')
             socket.emit('join room');
         }
-    }
-    
-
+    })
     socket.on('error', ({ msg })=>{
         document.body.innerHTML=`
             <div class="error-msg">
@@ -93,7 +97,7 @@
             <div>`;
         socket.disconnect();
     });
-    
+
     socket.on('room size changed', (data)=>{
         console.log(data);
     });
