@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+        }
+        .flex{
+            display: flex;
+            flex-direction: column;
+        }
+        .flex div{
+            display: flex;
+            justify-content: center;
+            width: 100vw;
+            height: 33vh;
+        }
+        button{
+            height: 100%;
+            width: inherit;
+            font-size: 2rem;
+        }
+        .error-msg{
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: snow;
+            color: rgb(65, 65, 65);
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
+        }
+        .error-msg > h1{
+            background-color: white;
+            padding: 4rem 2rem;
+            margin: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+        }
+    </style>
+</head>
+<body>
+    <div class="flex">
+        <div>
+            <button onclick="handleClick(event)" value="ArrowUp">UP</button>
+        </div>
+        <div>
+            <button onclick="handleClick(event)"  value="ArrowLeft">LEFT</button>
+            <button onclick="handleClick(event)"  value="ArrowRight">RIGHT</button>
+        </div>
+        <div>
+            <button  onclick="handleClick(event)" value="ArrowDown">DOWN</button>
+        </div>
+    </div>
+    <pre id="pretag">
+
+    </pre>
+</body>
+    <script src="/socket.io/socket.io.js"></script> 
+  <script type="text/javascript">
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const id = urlParams.get('id');
+    // const id = 'test123';
+    var socket = io({
+        auth:{
+            token: id
+        }
+    });
+    socket.on('error', ({ msg })=>{
+        document.body.innerHTML=`
+            <div class="error-msg">
+                
+                <h1>
+                    <span>ERROR:</span> <br>
+                    ${msg}
+                </h1>
+            <div>`;
+    });
+    socket.on('room size changed', (data)=>{
+        console.log(data);
+    });
+
+    function handleClick (e){
+        socket.emit('register key', {key: e.target.value});
+    }
+
+  </script>
+</html>
