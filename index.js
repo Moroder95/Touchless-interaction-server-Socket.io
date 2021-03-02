@@ -26,28 +26,47 @@ io.on('connection', (socket) => {
     const roomID = socket.handshake.auth.token;
     
     let inRoom = false;
-    if(roomID && (rooms[roomID] === undefined)){
+    
+    // if(roomID && (rooms[roomID] === undefined)){
+    //     socket.join(roomID);
+    //     rooms[roomID] = 1;
+    //     inRoom = true;
+    //     io.to(roomID).emit('room size changed', {users: rooms[roomID]})
+    // }else if(roomID && rooms[roomID] < 2){
+    //    socket.join(roomID);
+    //    rooms[roomID] += 1;
+    //    inRoom = true;
+    //    io.to(roomID).emit('room size changed', {users: rooms[roomID]})
+    // }else{
+    //     const msg = 'Someone already connected to this instance';
+    //     socket.emit('error', {msg})
+    // }
+
+    socket.on('initialize room', () =>{
         socket.join(roomID);
         rooms[roomID] = 1;
         inRoom = true;
-        io.to(roomID).emit('room size changed', {users: rooms[roomID]})
-    }else if(roomID && rooms[roomID] < 2){
-       socket.join(roomID);
-       rooms[roomID] += 1;
-       inRoom = true;
-       io.to(roomID).emit('room size changed', {users: rooms[roomID]})
-    }else{
-        const msg = 'Someone already connected to this instance';
-        socket.emit('error', {msg})
-    }
-    socket.on('initialize room', (roomID) =>{
-        const uid = uuid();
-        console.log(roomID);
-        socket.join(roomID);
-        
-        rooms[socket.id] = roomID;
     });
 
+    socket.on('join room', () =>{
+        let msg ='Something went wrong.';
+        if(rooms[roomID] > 0 && rooms[roomID] < 2 ){
+            inRoom= true;
+            socket.join(roomID);
+            rooms[roomID] += 1;
+        }else if(rooms[roomID] === undefined ){
+            msg = 'Host screen isn\'t available.'
+            
+        }else if(rooms[roomID] >= 2){
+            msg = 'Host screen is already in use.'
+        };
+        socket.emit('error', {msg}); 
+    });
+
+    socket.on('host disconnected',()=>{
+        const msg= 'Host has disconnected';
+        io.to(roomID).emit('error', {msg})
+    });
     socket.on('disconnecting', (socket)=>{
         console.log('disconnecting')
         if(inRoom){
