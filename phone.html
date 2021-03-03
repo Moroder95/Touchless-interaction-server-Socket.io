@@ -151,15 +151,15 @@
         socket.emit("join room");
       }
     });
-    // socket.on('error', ({ msg })=>{
-    //     errEl.innerHTML=`
-    //             <h1>
-    //                 <span>ERROR:</span> <br>
-    //                 ${msg}
-    //             </h1>`;
-    //     errEl.style.display = 'flex';
-    //     // socket.disconnect();
-    // });
+    socket.on('error', ({ msg })=>{
+        errEl.innerHTML=`
+                <h1>
+                    <span>ERROR:</span> <br>
+                    ${msg}
+                </h1>`;
+        errEl.style.display = 'flex';
+        // socket.disconnect();
+    });
     socket.on("finished", () => {
       const msg = "Thank you for participating!";
       errEl.innerHTML = `
