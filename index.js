@@ -4,6 +4,7 @@ const io = require('socket.io')(http);
 const { disconnect } = require('process');
 const { v4: uuid } = require('uuid');
 const rooms = {};
+const roomsHosts = {};
 
 app.get('/main', (req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -11,9 +12,7 @@ app.get('/main', (req, res) => {
  app.get('/phone?:id', (req, res) => {
     res.sendFile(__dirname + '/phone.html');
  });
-//  app.get('/client.js', (req, res) => {
-//     res.sendFile(__dirname + '/client.js');
-//  });
+
  app.get('/pclient.js', (req, res) => {
     res.sendFile(__dirname + '/pclient.js');
  });
@@ -26,26 +25,14 @@ io.on('connection', (socket) => {
     const roomID = socket.handshake.auth.token;
     
     let inRoom = false;
-    
-    // if(roomID && (rooms[roomID] === undefined)){
-    //     socket.join(roomID);
-    //     rooms[roomID] = 1;
-    //     inRoom = true;
-    //     io.to(roomID).emit('room size changed', {users: rooms[roomID]})
-    // }else if(roomID && rooms[roomID] < 2){
-    //    socket.join(roomID);
-    //    rooms[roomID] += 1;
-    //    inRoom = true;
-    //    io.to(roomID).emit('room size changed', {users: rooms[roomID]})
-    // }else{
-    //     const msg = 'Someone already connected to this instance';
-    //     socket.emit('error', {msg})
-    // }
 
     socket.on('initialize room', () =>{
         socket.join(roomID);
-        rooms[roomID] = 1;
+        rooms[roomID] = rooms[roomID] === undefined ? 1 : rooms[roomID] + 1;
+        roomsHosts[roomID] = socket.id;
         inRoom = true;
+        const users = rooms[roomID];
+        io.to(roomID).emit('room size changed', {users})
     });
 
     socket.on('join room', () =>{
@@ -54,6 +41,8 @@ io.on('connection', (socket) => {
             inRoom= true;
             socket.join(roomID);
             rooms[roomID] += 1;
+            const users = rooms[roomID];
+            io.to(roomID).emit('room size changed', {users})
             return;
         }else if(rooms[roomID] === undefined || rooms[roomID] <=0 ){
             msg = 'Host screen isn\'t available.'
@@ -68,20 +57,27 @@ io.on('connection', (socket) => {
         const msg= 'Host has disconnected';
         io.to(roomID).emit('error', {msg})
     });
-    socket.on('disconnecting', (socket)=>{
-        console.log('disconnecting')
+    socket.on('disconnecting', (newSocket)=>{
+      
         if(inRoom){
-            rooms[roomID] -= 1;
-            io.to(roomID).emit('room size changed', {users: rooms[roomID]})
+            const users = rooms[roomID] -= 1;
+
+            if(roomsHosts[roomID] === socket.id){
+                delete roomsHosts[roomID];
+            }
+
+            if(users === 0 ){
+                delete rooms[roomID];
+            }
+
+            io.to(roomID).emit('room size changed', {users})
         }
     });
     socket.on('register key', ({ key })=>{
         io.to(roomID).emit('key event', { key });
     })
 });
-io.on('disconnect', (socket)=>{
-    console.log(socket.id, 'has disconnected')
-})
+
 const port = process.env.PORT || 3001
 http.listen( port, () => {
   console.log(`listening on *:${port}`);

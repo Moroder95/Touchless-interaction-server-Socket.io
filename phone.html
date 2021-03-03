@@ -9,34 +9,65 @@
         body{
             padding: 0;
             margin: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
         }
         .flex{
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            width: 100vw;
         }
         .flex div{
             display: flex;
             justify-content: center;
-            width: 100vw;
-            height: 33vh;
+            width: 100%;
+            flex: 1 1 auto;
+            /* height: 33vh; */
+        }
+        .flex .connection-status-bar{
+            flex: 0.2;
+        }
+        .flex .connection-status-bar > #connection-status-text {
+            position: relative;
+            margin: 1rem;
+        }
+        .flex .connection-status-bar > #connection-status-text::after{
+            content: "";
+            position: absolute;
+            height: 1rem;
+            width: 1rem;
+            background: #cc0000;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            left: -2rem;
+        }
+        .flex .connection-status-bar > #connection-status-text.connected::after {
+            background: olivedrab;
         }
         button{
             height: 100%;
             width: inherit;
             font-size: 2rem;
         }
-        .error-msg{
+        #error-msg{
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             text-align: center;
             background-color: snow;
             color: rgb(65, 65, 65);
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
+           
         }
-        .error-msg > h1{
+        #error-msg > h1{
             background-color: white;
             padding: 4rem 2rem;
             margin: 1rem;
@@ -52,15 +83,20 @@
         </div>
         <div>
             <button onclick="handleClick(event)"  value="ArrowLeft">LEFT</button>
+            <button onclick="handleClick(event)"  value="Enter">CLICK</button>
             <button onclick="handleClick(event)"  value="ArrowRight">RIGHT</button>
         </div>
         <div>
             <button  onclick="handleClick(event)" value="ArrowDown">DOWN</button>
         </div>
+        <div class="connection-status-bar">
+            <span id="connection-status-text">DISCONNECTED</span>
+        </div>
     </div>
-    <pre id="pretag">
+   
+    <div id="error-msg">
 
-    </pre>
+    </div>
 </body>
     <script src="/socket.io/socket.io.js"></script> 
   <script type="text/javascript">
@@ -68,6 +104,8 @@
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get('id');
+    const errEl  = document.getElementById('error-msg');
+
     var socket = io({
         auth:{
             token: id
@@ -80,28 +118,31 @@
         }
     })
     socket.on('error', ({ msg })=>{
-        document.body.innerHTML=`
-            <div class="error-msg">
+        errEl.innerHTML=`
                 <h1>
                     <span>ERROR:</span> <br>
                     ${msg}
-                </h1>
-            <div>`;
-        socket.disconnect();
+                </h1>`;
+        errEl.style.display = 'flex';
+        // socket.disconnect();
     });
     socket.on('finished', ()=>{
         const msg = "Thank you for participating!"
-        document.body.innerHTML=`
-            <div class="error-msg">
-                <h1>
-                    ${msg}
-                </h1>
-            <div>`;
+        errEl.innerHTML=`
+            <h1>
+                ${msg}
+            </h1>`;
+        errEl.style.display = 'flex';
         socket.disconnect();
-    })
+    });
 
     socket.on('room size changed', (data)=>{
-        console.log(data);
+        const { users } = data;
+        let text = users > 1 ? "CONNECTED" : "DISCONNECTED";
+        const connectionEl = document.getElementById('connection-status-text');
+        connectionEl.innerHTML = text;
+        const toDo = users > 1 ? 'add' : 'remove';
+        connectionEl.classList[toDo]('connected');
     });
 
     function handleClick (e){
