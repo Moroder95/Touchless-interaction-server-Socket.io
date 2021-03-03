@@ -1,153 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-        body{
-            padding: 0;
-            margin: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;  
-        }
-        .flex{
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100vw;
-        }
-        .flex div{
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            flex: 1 1 auto;
-            /* height: 33vh; */
-        }
-        .flex .connection-status-bar{
-            flex: 0.2;
-        }
-        .flex .connection-status-bar > #connection-status-text {
-            position: relative;
-            margin: 1rem;
-        }
-        .flex .connection-status-bar > #connection-status-text::after{
-            content: "";
-            position: absolute;
-            height: 1rem;
-            width: 1rem;
-            background: #cc0000;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            left: -2rem;
-        }
-        .flex .connection-status-bar > #connection-status-text.connected::after {
-            background: olivedrab;
-        }
-        button{
-            height: 100%;
-            width: inherit;
-            font-size: 2rem;
-        }
-        #error-msg{
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            background-color: snow;
-            color: rgb(65, 65, 65);
-           
-        }
-        #error-msg > h1{
-            background-color: white;
-            padding: 4rem 2rem;
-            margin: 1rem;
-            border-radius: 0.5rem;
-            box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
-        }
+      body {
+        padding: 0;
+        margin: 0;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+          "Lucida Sans", Arial, sans-serif;
+        background-color: #e5e5e5;
+      }
+      .flex {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+      }
+      .flex div {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        flex: 1 1 auto;
+        /* height: 33vh; */
+      }
+      .flex .connection-status-bar {
+        flex: 0.2;
+      }
+      .flex .connection-status-bar > #connection-status-text {
+        position: relative;
+        margin: 1rem;
+        font-family: Helvetica Neue;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        text-align: center;
+        color: #727272;
+      }
+      .flex .connection-status-bar > #connection-status-text::after {
+        content: "";
+        position: absolute;
+        height: 0.5rem;
+        width: 0.5rem;
+        background: #cc0000;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        left: -1rem;
+      }
+      .flex .connection-status-bar > #connection-status-text.connected::after {
+        background: olivedrab;
+      }
+      button {
+        height: 100%;
+        width: inherit;
+        font-size: 2rem;
+      }
+      #error-msg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background-color: snow;
+        color: rgb(65, 65, 65);
+      }
+      #error-msg > h1 {
+        background-color: white;
+        padding: 4rem 2rem;
+        margin: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+      }
+      #swipeArea {
+        box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.24), 0px 0px 15px rgba(0, 0, 0, 0.12);
+        height: 90%;
+        width: 96%;
+        margin-left: 2%;
+        margin-right: 2%;
+        background-color: white;
+        border-radius: 8px;
+      }
+      .instructionText {
+          margin-bottom: 20px;
+          color: #727272;
+      }
+      #topInstruction {
+          margin-top: 35px;
+      }
+
+
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="flex">
-        <div>
-            <button onclick="handleClick(event)" value="ArrowUp">UP</button>
-        </div>
-        <div>
-            <button onclick="handleClick(event)"  value="ArrowLeft">LEFT</button>
-            <button onclick="handleClick(event)"  value="Enter">CLICK</button>
-            <button onclick="handleClick(event)"  value="ArrowRight">RIGHT</button>
-        </div>
-        <div>
-            <button  onclick="handleClick(event)" value="ArrowDown">DOWN</button>
-        </div>
-        <div class="connection-status-bar">
-            <span id="connection-status-text">DISCONNECTED</span>
-        </div>
+      <!-- <div>
+        <button onclick="handleClick(event)" value="ArrowUp">UP</button>
+      </div>
+      <div>
+        <button onclick="handleClick(event)" value="ArrowLeft">LEFT</button>
+        <button onclick="handleClick(event)" value="Enter">CLICK</button>
+        <button onclick="handleClick(event)" value="ArrowRight">RIGHT</button>
+      </div>
+      <div>
+        <button onclick="handleClick(event)" value="ArrowDown">DOWN</button>
+      </div>
+     
+    </div> -->
+
+    <div class="instructionText" id="topInstruction">
+        Swipe to navigate
     </div>
-   
-    <div id="error-msg">
+    <div class="instructionText">Tap to select</div>
+
+    <div id="swipeArea">
 
     </div>
-</body>
-    <script src="/socket.io/socket.io.js"></script> 
+
+    <div class="connection-status-bar">
+        <span id="connection-status-text">No connection to display</span>
+      </div>
+
+    <div id="error-msg"></div>
+  </body>
+  <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
-
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const id = urlParams.get('id');
-    const errEl  = document.getElementById('error-msg');
+    const id = urlParams.get("id");
+    const errEl = document.getElementById("error-msg");
 
     var socket = io({
-        auth:{
-            token: id
-        }
+      auth: {
+        token: id,
+      },
     });
 
-    socket.on('connect', ()=> {
-        if(socket.connected){
-            socket.emit('join room');
-        }
-    })
-    socket.on('error', ({ msg })=>{
-        errEl.innerHTML=`
-                <h1>
-                    <span>ERROR:</span> <br>
-                    ${msg}
-                </h1>`;
-        errEl.style.display = 'flex';
-        // socket.disconnect();
+    socket.on("connect", () => {
+      if (socket.connected) {
+        socket.emit("join room");
+      }
     });
-    socket.on('finished', ()=>{
-        const msg = "Thank you for participating!"
-        errEl.innerHTML=`
+    // socket.on('error', ({ msg })=>{
+    //     errEl.innerHTML=`
+    //             <h1>
+    //                 <span>ERROR:</span> <br>
+    //                 ${msg}
+    //             </h1>`;
+    //     errEl.style.display = 'flex';
+    //     // socket.disconnect();
+    // });
+    socket.on("finished", () => {
+      const msg = "Thank you for participating!";
+      errEl.innerHTML = `
             <h1>
                 ${msg}
             </h1>`;
-        errEl.style.display = 'flex';
-        socket.disconnect();
+      errEl.style.display = "flex";
+      socket.disconnect();
     });
 
-    socket.on('room size changed', (data)=>{
-        const { users } = data;
-        let text = users > 1 ? "CONNECTED" : "DISCONNECTED";
-        const connectionEl = document.getElementById('connection-status-text');
-        connectionEl.innerHTML = text;
-        const toDo = users > 1 ? 'add' : 'remove';
-        connectionEl.classList[toDo]('connected');
+    socket.on("room size changed", (data) => {
+      const { users } = data;
+      let text = users > 1 ? "CONNECTED" : "DISCONNECTED";
+      const connectionEl = document.getElementById("connection-status-text");
+      connectionEl.innerHTML = text;
+      const toDo = users > 1 ? "add" : "remove";
+      connectionEl.classList[toDo]("connected");
     });
 
-    function handleClick (e){
-        socket.emit('register key', {key: e.target.value});
+    function handleClick(e) {
+      socket.emit("register key", { key: e.target.value });
     }
-
   </script>
 </html>

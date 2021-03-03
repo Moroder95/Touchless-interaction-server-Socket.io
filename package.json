@@ -4,7 +4,7 @@
     "description": "A server that translates gestures into keyboard events",
     "main": "index.js",
     "scripts": {
-      "start": "node index.js"
+        "start": "node index.js"
     },
     "dependencies": {
         "express": "^4.17.1",
