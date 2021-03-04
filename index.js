@@ -1,10 +1,12 @@
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const { disconnect } = require('process');
-const { v4: uuid } = require('uuid');
+const io = require('socket.io')(http, {
+    cors:true,
+    origins:["http://127.0.0.1:3000", "http://localhost:3000"],
+   });
 const rooms = {};
 const roomsHosts = {};
+
 
 app.get('/main', (req, res) => {
     res.sendFile(__dirname + '/index.html');
