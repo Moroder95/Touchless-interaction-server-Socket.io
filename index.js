@@ -22,7 +22,8 @@ app.get('/main', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-    const roomID = socket.handshake.auth.token;
+    // const roomID = socket.handshake.auth.token;
+    const roomID = '123231';
     
     let inRoom = false;
 
