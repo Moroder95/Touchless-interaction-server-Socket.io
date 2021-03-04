@@ -12,17 +12,24 @@
         margin: 0;
         height: 100vh;
         width: 100vw;
-        overflow: hidden;
-        font-family: 'Helvetica Neue';
+        /* overflow: hidden; */
+        /* font-family: 'Helvetica Neue'; */
+        font-family: system-ui;
         background-color: #e5e5e5;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
       }
+      body::-webkit-scrollbar {
+         display: none;
+      }  
+
       .flex {
         display: flex;
         flex-direction: column;
         height: 100vh;
         width: 100vw;
       }
-      .flex div {
+      .flex > div {
         display: flex;
         justify-content: center;
         width: 100%;
@@ -35,7 +42,7 @@
       .flex .connection-status-bar > #connection-status-text {
         position: relative;
         margin: 1rem;
-        font-family: Helvetica Neue;
+        /* font-family: 'Helvetica Neue'; */
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
@@ -89,7 +96,14 @@
         margin-right: 2%;
         background-color: white;
         border-radius: 8px;
+        overflow: scroll;
+        display: block;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
       }
+      #swipeArea::-webkit-scrollbar {
+         display: none;
+      } 
       .instructionText {
           margin-bottom: 20px;
           color: #727272;
@@ -97,40 +111,39 @@
       #topInstruction {
           margin-top: 35px;
       }
-
+      #swipe-canvas{ 
+        position: relative;
+        height: 25000px;
+        width: 25000px;
+        flex: 0 0 auto;
+      }
+      #center-span{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 20px;
+      }
 
     </style>
   </head>
   <body>
     <div class="flex">
-      <!-- <div>
-        <button onclick="handleClick(event)" value="ArrowUp">UP</button>
-      </div>
-      <div>
-        <button onclick="handleClick(event)" value="ArrowLeft">LEFT</button>
-        <button onclick="handleClick(event)" value="Enter">CLICK</button>
-        <button onclick="handleClick(event)" value="ArrowRight">RIGHT</button>
-      </div>
-      <div>
-        <button onclick="handleClick(event)" value="ArrowDown">DOWN</button>
-      </div>
-     
-    </div> -->
 
-    <div class="instructionText" id="topInstruction">
-        Swipe to navigate
+        <div class="instructionText" id="topInstruction">
+            Swipe to navigate
+        </div>
+        <div class="instructionText">Tap to select</div>
+
+        <div id="swipeArea" >
+            <div id="swipe-canvas"><span id="center-span"></span></div>
+        </div>
+
+        <div class="connection-status-bar">
+            <span id="connection-status-text">No connection to display</span>
+        </div>
+
+        <div id="error-msg"></div>
     </div>
-    <div class="instructionText">Tap to select</div>
-
-    <div id="swipeArea">
-
-    </div>
-
-    <div class="connection-status-bar">
-        <span id="connection-status-text">No connection to display</span>
-      </div>
-
-    <div id="error-msg"></div>
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
@@ -138,6 +151,71 @@
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get("id");
     const errEl = document.getElementById("error-msg");
+    const scrollWrapper = document.getElementById('swipeArea');
+    const scrollCanvas = document.getElementById('swipe-canvas');
+    const centerSpan = document.getElementById('center-span');
+    const goToCenter = () => centerSpan.scrollIntoView({block: 'center', inline: 'center'});
+    goToCenter();
+
+    const MOVETHRESHOLD = 100;
+    const LEFTSTART = scrollWrapper.scrollLeft;
+    const TOPSTART = scrollWrapper.scrollTop;
+
+    let oldLeft = LEFTSTART;
+    let oldTop = TOPSTART;
+    let timer = null;
+    const resetCanvas = ()=>{
+        console.log('stopped scrolling');
+        oldLeft = LEFTSTART;
+        oldTop = TOPSTART;
+        goToCenter();     
+    };
+    scrollWrapper.addEventListener('scroll', function(e){
+        const newLeft = e.currentTarget.scrollLeft;
+        const newTop = e.currentTarget.scrollTop;
+
+        if((newLeft - oldLeft) > MOVETHRESHOLD){
+           oldLeft = newLeft;
+           console.log('left')
+           socket.emit("register key", { key: 'ArrowLeft' });
+        }
+        if((oldLeft - newLeft) > MOVETHRESHOLD){
+           oldLeft = newLeft;
+           console.log('right')
+           socket.emit("register key", { key: 'ArrowRight' });
+        }
+        if((newTop - oldTop) > MOVETHRESHOLD){
+           oldTop = newTop;
+           console.log('up') 
+           socket.emit("register key", { key: 'ArrowUp' });
+        }
+        if((oldTop - newTop) > MOVETHRESHOLD){
+           oldTop = newTop;
+           console.log('down') 
+           socket.emit("register key", { key: 'ArrowDown' });
+        }
+        if(timer !== null) {
+            clearTimeout(timer);        
+        }
+        timer = setTimeout(resetCanvas, 150);
+    });
+
+    let touchX = null;
+    let touchY = null;
+
+    scrollWrapper.addEventListener('touchstart', function(e){
+        touchX = e.targetTouches[0].clientX;
+        touchY = e.targetTouches[0].clientY;
+    });
+
+    scrollWrapper.addEventListener('touchend', function(e){
+        const x = e.changedTouches[0].clientX;
+        const y = e.changedTouches[0].clientY;
+        if(touchX === x && touchY === y){
+            console.log("enter");
+            socket.emit("register key", { key: 'Enter' });
+        }
+    });
 
     var socket = io({
       auth: {
