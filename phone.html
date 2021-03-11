@@ -5,12 +5,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Touchless Phone Controller</title>
     <style>
       body {
         padding: 0;
         margin: 0;
-        height: 100vh;
+        height: 90vh;
         width: 100vw;
         /* overflow: hidden; */
         /* font-family: 'Helvetica Neue'; */
@@ -26,8 +26,8 @@
       .flex {
         display: flex;
         flex-direction: column;
-        height: 100vh;
-        width: 100vw;
+        height: 100%;
+        width: 100%;
       }
       .flex > div {
         display: flex;
@@ -124,6 +124,7 @@
         height: 20px;
       }
 
+
     </style>
   </head>
   <body>
@@ -157,43 +158,46 @@
     const goToCenter = () => centerSpan.scrollIntoView({block: 'center', inline: 'center'});
     goToCenter();
 
-    const MOVETHRESHOLD = 100;
+    const MOVETHRESHOLD = 45;
     const LEFTSTART = scrollWrapper.scrollLeft;
     const TOPSTART = scrollWrapper.scrollTop;
-
+    const TAP_MARGRIN_OF_ERROR = 8;
+    const SCROLLMULTIPLIER = 4;
+    
     let oldLeft = LEFTSTART;
     let oldTop = TOPSTART;
     let timer = null;
+    let touching= false;
+    let toFastTimer = null;
     const resetCanvas = ()=>{
-        console.log('stopped scrolling');
         oldLeft = LEFTSTART;
         oldTop = TOPSTART;
-        goToCenter();     
+        goToCenter();
+        timer = null;
     };
     scrollWrapper.addEventListener('scroll', function(e){
         const newLeft = e.currentTarget.scrollLeft;
         const newTop = e.currentTarget.scrollTop;
+        const multipler = touching ? 1 : SCROLLMULTIPLIER;
+        const thres = MOVETHRESHOLD * multipler;
 
-        if((newLeft - oldLeft) > MOVETHRESHOLD){
+        if((newLeft - oldLeft) > thres){
            oldLeft = newLeft;
-           console.log('left')
            socket.emit("register key", { key: 'ArrowLeft' });
         }
-        if((oldLeft - newLeft) > MOVETHRESHOLD){
+        if((oldLeft - newLeft) > thres){
            oldLeft = newLeft;
-           console.log('right')
            socket.emit("register key", { key: 'ArrowRight' });
         }
-        if((newTop - oldTop) > MOVETHRESHOLD){
+        if((newTop - oldTop) > thres){
            oldTop = newTop;
-           console.log('up') 
            socket.emit("register key", { key: 'ArrowUp' });
         }
-        if((oldTop - newTop) > MOVETHRESHOLD){
+        if((oldTop - newTop) > thres){
            oldTop = newTop;
-           console.log('down') 
            socket.emit("register key", { key: 'ArrowDown' });
         }
+
         if(timer !== null) {
             clearTimeout(timer);        
         }
@@ -204,15 +208,20 @@
     let touchY = null;
 
     scrollWrapper.addEventListener('touchstart', function(e){
+        touching= true;
+
         touchX = e.targetTouches[0].clientX;
         touchY = e.targetTouches[0].clientY;
     });
 
     scrollWrapper.addEventListener('touchend', function(e){
+        touching= false;
         const x = e.changedTouches[0].clientX;
         const y = e.changedTouches[0].clientY;
-        if(touchX === x && touchY === y){
-            console.log("enter");
+
+        const xIsSame = Math.abs(touchX - x) < TAP_MARGRIN_OF_ERROR;
+        const yIsSame = Math.abs(touchY - y) < TAP_MARGRIN_OF_ERROR;
+        if( xIsSame && yIsSame ){
             socket.emit("register key", { key: 'Enter' });
         }
     });
