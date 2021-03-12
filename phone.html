@@ -113,7 +113,11 @@
         color: #727272;
       }
       #topInstruction {
-        margin-top: 25px;
+        display: flex;
+        margin: 15px 0px;
+      }
+      #topInstruction > span {
+        align-self: flex-end;
       }
       #swipe-canvas {
         position: relative;
@@ -127,12 +131,13 @@
         left: 50%;
         height: 20px;
       }
+      
     </style>
   </head>
   <body>
     <div class="flex">
       <div class="instructionText" id="topInstruction">
-        Swipe to navigate - Tap to select
+        <span>Swipe to navigate - Tap to select</span>
       </div>
 
       <div id="swipeArea">
