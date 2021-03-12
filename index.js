@@ -19,9 +19,6 @@ app.get('/main', (req, res) => {
     res.sendFile(__dirname + '/pclient.js');
  });
 
- io.on('connection', (socket) => {
-    console.log('a user connected');
-});
 
 io.on('connection', (socket) => {
     const roomID = socket.handshake.auth.token;

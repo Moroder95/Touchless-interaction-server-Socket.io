@@ -181,6 +181,7 @@
     let touching = false;
     let toFastTimer = null;
     let firstMove = true;
+
     const resetCanvas = () => {
       oldLeft = LEFTSTART;
       oldTop = TOPSTART;
@@ -188,7 +189,7 @@
       firstMove = true;
       timer = null;
     };
-    const emitKey = (condition, key)
+
     scrollWrapper.addEventListener("scroll", function (e) {
       const newLeft = e.currentTarget.scrollLeft;
       const newTop = e.currentTarget.scrollTop;
