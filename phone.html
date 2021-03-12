@@ -153,9 +153,10 @@
   </body>
   <script src="/socket.io/socket.io.js"></script>
   <script type="text/javascript">
-    document.ontouchmove = function(event){
-      event.preventDefault();
-    }
+    // document.addEventListener('touchmove', function(event){
+    //   event.preventDefault();
+    // });
+
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const id = urlParams.get("id");
@@ -167,49 +168,58 @@
       centerSpan.scrollIntoView({ block: "center", inline: "center" });
     goToCenter();
 
-    const MOVETHRESHOLD = 55;
+    const MOVETHRESHOLD = 50;
     const LEFTSTART = scrollWrapper.scrollLeft;
     const TOPSTART = scrollWrapper.scrollTop;
     const TAP_MARGRIN_OF_ERROR = 8;
-    const SCROLLMULTIPLIER = 4;
+    const SCROLLMULTIPLIER = 3;
+    const MULTIPLEMOVEMULTIPLIER = 1.4;
 
     let oldLeft = LEFTSTART;
     let oldTop = TOPSTART;
     let timer = null;
     let touching = false;
     let toFastTimer = null;
+    let firstMove = true;
     const resetCanvas = () => {
       oldLeft = LEFTSTART;
       oldTop = TOPSTART;
       goToCenter();
+      firstMove = true;
       timer = null;
     };
     scrollWrapper.addEventListener("scroll", function (e) {
       const newLeft = e.currentTarget.scrollLeft;
       const newTop = e.currentTarget.scrollTop;
-      const multipler = touching ? 1 : SCROLLMULTIPLIER;
+      const multipler = touching ? 
+      (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER;
       const thres = MOVETHRESHOLD * multipler;
-
+      console.log(multipler)
       if (newLeft - oldLeft > thres) {
         oldLeft = newLeft;
+        firstMove = false;
         socket.emit("register key", { key: "ArrowLeft" });
       }
       if (oldLeft - newLeft > thres) {
         oldLeft = newLeft;
+        firstMove = false;
         socket.emit("register key", { key: "ArrowRight" });
       }
       if (newTop - oldTop > thres) {
         oldTop = newTop;
+        firstMove = false;
         socket.emit("register key", { key: "ArrowUp" });
       }
       if (oldTop - newTop > thres) {
         oldTop = newTop;
+        firstMove = false;
         socket.emit("register key", { key: "ArrowDown" });
       }
 
       if (timer !== null) {
         clearTimeout(timer);
       }
+      console.log(thres)
       timer = setTimeout(resetCanvas, 150);
     });
 
