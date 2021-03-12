@@ -94,7 +94,7 @@
       #swipeArea {
         box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.24),
           0px 0px 15px rgba(0, 0, 0, 0.12);
-        height: 80%;
+        height: 70%;
         width: 96%;
         margin-left: 2%;
         margin-right: 2%;
@@ -127,8 +127,6 @@
         left: 50%;
         height: 20px;
       }
-
-
     </style>
   </head>
   <body>
@@ -165,67 +163,67 @@
     const TOPSTART = scrollWrapper.scrollTop;
     const TAP_MARGRIN_OF_ERROR = 8;
     const SCROLLMULTIPLIER = 4;
-    
+
     let oldLeft = LEFTSTART;
     let oldTop = TOPSTART;
     let timer = null;
-    let touching= false;
+    let touching = false;
     let toFastTimer = null;
-    const resetCanvas = ()=>{
-        oldLeft = LEFTSTART;
-        oldTop = TOPSTART;
-        goToCenter();
-        timer = null;
+    const resetCanvas = () => {
+      oldLeft = LEFTSTART;
+      oldTop = TOPSTART;
+      goToCenter();
+      timer = null;
     };
-    scrollWrapper.addEventListener('scroll', function(e){
-        const newLeft = e.currentTarget.scrollLeft;
-        const newTop = e.currentTarget.scrollTop;
-        const multipler = touching ? 1 : SCROLLMULTIPLIER;
-        const thres = MOVETHRESHOLD * multipler;
+    scrollWrapper.addEventListener("scroll", function (e) {
+      const newLeft = e.currentTarget.scrollLeft;
+      const newTop = e.currentTarget.scrollTop;
+      const multipler = touching ? 1 : SCROLLMULTIPLIER;
+      const thres = MOVETHRESHOLD * multipler;
 
-        if((newLeft - oldLeft) > thres){
-           oldLeft = newLeft;
-           socket.emit("register key", { key: 'ArrowLeft' });
-        }
-        if((oldLeft - newLeft) > thres){
-           oldLeft = newLeft;
-           socket.emit("register key", { key: 'ArrowRight' });
-        }
-        if((newTop - oldTop) > thres){
-           oldTop = newTop;
-           socket.emit("register key", { key: 'ArrowUp' });
-        }
-        if((oldTop - newTop) > thres){
-           oldTop = newTop;
-           socket.emit("register key", { key: 'ArrowDown' });
-        }
+      if (newLeft - oldLeft > thres) {
+        oldLeft = newLeft;
+        socket.emit("register key", { key: "ArrowLeft" });
+      }
+      if (oldLeft - newLeft > thres) {
+        oldLeft = newLeft;
+        socket.emit("register key", { key: "ArrowRight" });
+      }
+      if (newTop - oldTop > thres) {
+        oldTop = newTop;
+        socket.emit("register key", { key: "ArrowUp" });
+      }
+      if (oldTop - newTop > thres) {
+        oldTop = newTop;
+        socket.emit("register key", { key: "ArrowDown" });
+      }
 
-        if(timer !== null) {
-            clearTimeout(timer);        
-        }
-        timer = setTimeout(resetCanvas, 150);
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+      timer = setTimeout(resetCanvas, 150);
     });
 
     let touchX = null;
     let touchY = null;
 
-    scrollWrapper.addEventListener('touchstart', function(e){
-        touching= true;
+    scrollWrapper.addEventListener("touchstart", function (e) {
+      touching = true;
 
-        touchX = e.targetTouches[0].clientX;
-        touchY = e.targetTouches[0].clientY;
+      touchX = e.targetTouches[0].clientX;
+      touchY = e.targetTouches[0].clientY;
     });
 
-    scrollWrapper.addEventListener('touchend', function(e){
-        touching= false;
-        const x = e.changedTouches[0].clientX;
-        const y = e.changedTouches[0].clientY;
+    scrollWrapper.addEventListener("touchend", function (e) {
+      touching = false;
+      const x = e.changedTouches[0].clientX;
+      const y = e.changedTouches[0].clientY;
 
-        const xIsSame = Math.abs(touchX - x) < TAP_MARGRIN_OF_ERROR;
-        const yIsSame = Math.abs(touchY - y) < TAP_MARGRIN_OF_ERROR;
-        if( xIsSame && yIsSame ){
-            socket.emit("register key", { key: 'Enter' });
-        }
+      const xIsSame = Math.abs(touchX - x) < TAP_MARGRIN_OF_ERROR;
+      const yIsSame = Math.abs(touchY - y) < TAP_MARGRIN_OF_ERROR;
+      if (xIsSame && yIsSame) {
+        socket.emit("register key", { key: "Enter" });
+      }
     });
 
     var socket = io({
