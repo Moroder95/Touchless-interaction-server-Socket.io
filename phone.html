@@ -4,16 +4,20 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' >
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
     <title>Touchless Phone Controller</title>
+    <script>
+      let vh = window.innerHeight;
+      document.documentElement.style.setProperty("--vh", `${vh}px`);
+    </script>
     <style>
-      html {
-        height: 100%;
-      }
       body {
         padding: 0;
         margin: 0;
-        height: 90vh;
+        height: calc(var(--vh, 1vh) * 100);
         width: 100vw;
         /* overflow: hidden; */
         /* font-family: 'Helvetica Neue'; */
@@ -131,7 +135,6 @@
         left: 50%;
         height: 20px;
       }
-      
     </style>
   </head>
   <body>
@@ -167,7 +170,9 @@
     const goToCenter = () =>
       centerSpan.scrollIntoView({ block: "center", inline: "center" });
     goToCenter();
-    document.getElementById('connection-status-text').scrollIntoView({block: 'start'});
+    document
+      .getElementById("connection-status-text")
+      .scrollIntoView({ block: "start" });
 
     const MOVETHRESHOLD = 50;
     const LEFTSTART = scrollWrapper.scrollLeft;
@@ -194,11 +199,15 @@
     scrollWrapper.addEventListener("scroll", function (e) {
       const newLeft = e.currentTarget.scrollLeft;
       const newTop = e.currentTarget.scrollTop;
-      // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER; 
-      const multipler = firstMove ? 1 : (touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER);
-     
+      // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER;
+      const multipler = firstMove
+        ? 1
+        : touching
+        ? MULTIPLEMOVEMULTIPLIER
+        : SCROLLMULTIPLIER;
+
       const thres = MOVETHRESHOLD * multipler;
-      
+
       if (newLeft - oldLeft > thres) {
         oldLeft = newLeft;
         firstMove = false;
@@ -223,7 +232,7 @@
       if (timer !== null) {
         clearTimeout(timer);
       }
-      console.log(thres)
+      console.log(thres);
       timer = setTimeout(resetCanvas, 150);
     });
 
