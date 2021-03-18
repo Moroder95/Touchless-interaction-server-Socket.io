@@ -167,6 +167,7 @@
     const goToCenter = () =>
       centerSpan.scrollIntoView({ block: "center", inline: "center" });
     goToCenter();
+    scrollWrapper.scrollIntoView({block: 'start'});
 
     const MOVETHRESHOLD = 50;
     const LEFTSTART = scrollWrapper.scrollLeft;
