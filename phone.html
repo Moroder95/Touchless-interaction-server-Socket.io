@@ -177,15 +177,9 @@
     const LEFTSTART = scrollWrapper.scrollLeft;
     const TOPSTART = scrollWrapper.scrollTop;
     const TAP_MARGRIN_OF_ERROR = 8;
-<<<<<<< HEAD
-    const SCROLLMULTIPLIER = 3;
-    const MULTIPLEMOVEMULTIPLIER = 1.4;
-    const VIBRATE_MS = 200;
-=======
     const SCROLLMULTIPLIER = 5;
     const MULTIPLEMOVEMULTIPLIER = 1.8;
-
->>>>>>> master
+    const VIBRATE_MS = 200;
     let oldLeft = LEFTSTART;
     let oldTop = TOPSTART;
     let timer = null;
@@ -206,24 +200,12 @@
     scrollWrapper.addEventListener("scroll", function (e) {
       const newLeft = e.currentTarget.scrollLeft;
       const newTop = e.currentTarget.scrollTop;
-<<<<<<< HEAD
       // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER; 
       const multipler = firstMove ? 1 : (touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER);
       const thres = MOVETHRESHOLD * multipler;
 
       let key = '';
 
-=======
-      // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER;
-      const multipler = firstMove
-        ? 1
-        : touching
-        ? MULTIPLEMOVEMULTIPLIER
-        : SCROLLMULTIPLIER;
-
-      const thres = MOVETHRESHOLD * multipler;
-
->>>>>>> master
       if (newLeft - oldLeft > thres) {
         oldLeft = newLeft;
         key = "ArrowLeft";
@@ -250,11 +232,6 @@
       if (timer !== null) {
         clearTimeout(timer);
       }
-<<<<<<< HEAD
-
-=======
-      console.log(thres);
->>>>>>> master
       timer = setTimeout(resetCanvas, 150);
     });
 
