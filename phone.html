@@ -175,7 +175,7 @@
     const TAP_MARGRIN_OF_ERROR = 8;
     const SCROLLMULTIPLIER = 3;
     const MULTIPLEMOVEMULTIPLIER = 1.4;
-
+    const VIBRATE_MS = 200;
     let oldLeft = LEFTSTART;
     let oldTop = TOPSTART;
     let timer = null;
@@ -190,40 +190,45 @@
       firstMove = true;
       timer = null;
     };
-
+    function vib(){
+      navigator.vibrate(VIBRATE_MS);
+    }
     scrollWrapper.addEventListener("scroll", function (e) {
       const newLeft = e.currentTarget.scrollLeft;
       const newTop = e.currentTarget.scrollTop;
       // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER; 
       const multipler = firstMove ? 1 : (touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER);
-     
       const thres = MOVETHRESHOLD * multipler;
-      
+
+      let key = '';
+
       if (newLeft - oldLeft > thres) {
         oldLeft = newLeft;
-        firstMove = false;
-        socket.emit("register key", { key: "ArrowLeft" });
+        key = "ArrowLeft";
       }
-      if (oldLeft - newLeft > thres) {
+      else if (oldLeft - newLeft > thres) {
         oldLeft = newLeft;
-        firstMove = false;
-        socket.emit("register key", { key: "ArrowRight" });
+        key = "ArrowRight";
       }
       if (newTop - oldTop > thres) {
         oldTop = newTop;
-        firstMove = false;
-        socket.emit("register key", { key: "ArrowUp" });
+        key = "ArrowUp";
       }
-      if (oldTop - newTop > thres) {
+      else if (oldTop - newTop > thres) {
         oldTop = newTop;
+        key = "ArrowDown";
+      }
+
+      if(key.length > 0){
         firstMove = false;
-        socket.emit("register key", { key: "ArrowDown" });
+        socket.emit("register key", { key });
+        vib();
       }
 
       if (timer !== null) {
         clearTimeout(timer);
       }
-      console.log(thres)
+
       timer = setTimeout(resetCanvas, 150);
     });
 
