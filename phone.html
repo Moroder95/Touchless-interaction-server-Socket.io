@@ -1,302 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-    />
-    <title>Touchless Phone Controller</title>
-    <script>
-      let vh = window.innerHeight;
-      document.documentElement.style.setProperty("--vh", `${vh}px`);
-    </script>
-    <style>
-      body {
-        padding: 0;
-        margin: 0;
-        height: calc(var(--vh, 1vh));
-        width: 100vw;
-        /* overflow: hidden; */
-        /* font-family: 'Helvetica Neue'; */
-        font-family: system-ui;
-        background-color: #e5e5e5;
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-      }
-      body::-webkit-scrollbar {
-        display: none;
-      }
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <title>Touchless Phone Controller</title>
+        <script>
+            let vh = window.innerHeight;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        </script>
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+                height: calc(var(--vh, 1vh));
+                width: 100vw;
+                /* overflow: hidden; */
+                /* font-family: 'Helvetica Neue'; */
+                font-family: system-ui;
+                background-color: #e5e5e5;
+                -ms-overflow-style: none; /* IE and Edge */
+                scrollbar-width: none; /* Firefox */
+            }
+            body::-webkit-scrollbar {
+                display: none;
+            }
 
-      .flex {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        width: 100%;
-      }
-      .flex > div {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        flex: 1 1 auto;
-        /* height: 33vh; */
-      }
-      .flex .connection-status-bar {
-        flex: 0.2;
-      }
-      .flex .connection-status-bar > #connection-status-text {
-        position: relative;
-        margin: 1rem;
-        /* font-family: 'Helvetica Neue'; */
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 400;
-        text-align: center;
-        color: #727272;
-      }
-      .flex .connection-status-bar > #connection-status-text::after {
-        content: "";
-        position: absolute;
-        height: 0.5rem;
-        width: 0.5rem;
-        background: #cc0000;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        left: -1rem;
-      }
-      .flex .connection-status-bar > #connection-status-text.connected::after {
-        background: olivedrab;
-      }
-      button {
-        height: 100%;
-        width: inherit;
-        font-size: 2rem;
-      }
-      #error-msg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100px;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        background-color: snow;
-        color: rgb(65, 65, 65);
-      }
-      #error-msg > h1 {
-        background-color: white;
-        padding: 4rem 2rem;
-        margin: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
-      }
-      #swipeArea {
-        box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.24),
-          0px 0px 15px rgba(0, 0, 0, 0.12);
-        width: 96%;
-        margin-left: 2%;
-        margin-top: 10px;
-        margin-right: 2%;
-        background-color: white;
-        border-radius: 8px;
-        overflow: scroll;
-        display: block;
-        -ms-overflow-style: none; /* IE and Edge */
-        scrollbar-width: none; /* Firefox */
-      }
-      #swipeArea::-webkit-scrollbar {
-        display: none;
-      }
-      .instructionText {
-        color: #727272;
-      }
-      #topInstruction {
-        display: flex;
-        margin: 15px 0px;
-      }
-      #topInstruction > span {
-        align-self: flex-end;
-      }
-      #swipe-canvas {
-        position: relative;
-        height: 25000px;
-        width: 25000px;
-        flex: 0 0 auto;
-      }
-      #center-span {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        height: 20px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="flex">
-      <div class="instructionText" id="topInstruction">
-        <span>Swipe to navigate - Tap to select</span>
-      </div>
+            .flex {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                width: 100%;
+            }
+            .flex > div {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                flex: 1 1 auto;
+                /* height: 33vh; */
+            }
+            .flex .connection-status-bar {
+                flex: 0.2;
+            }
+            .flex .connection-status-bar > #connection-status-text {
+                position: relative;
+                margin: 1rem;
+                /* font-family: 'Helvetica Neue'; */
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                text-align: center;
+                color: #727272;
+            }
+            .flex .connection-status-bar > #connection-status-text::after {
+                content: '';
+                position: absolute;
+                height: 0.5rem;
+                width: 0.5rem;
+                background: #cc0000;
+                border-radius: 50%;
+                top: 50%;
+                transform: translateY(-50%);
+                left: -1rem;
+            }
+            .flex .connection-status-bar > #connection-status-text.connected::after {
+                background: olivedrab;
+            }
+            button {
+                height: 100%;
+                width: inherit;
+                font-size: 2rem;
+            }
+            #error-msg {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100px;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                background-color: snow;
+                color: rgb(65, 65, 65);
+            }
+            #error-msg > h1 {
+                background-color: white;
+                padding: 4rem 2rem;
+                margin: 1rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
+            }
+            #swipeArea {
+                /* position: relative; */
+                box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.24), 0px 0px 15px rgba(0, 0, 0, 0.12);
+                width: 96%;
+                margin-left: 2%;
+                margin-top: 10px;
+                margin-right: 2%;
+                background-color: white;
+                border-radius: 8px;
+                overflow: scroll;
+                display: block;
+                -ms-overflow-style: none; /* IE and Edge */
+                scrollbar-width: none; /* Firefox */
+            }
+            #swipeArea::-webkit-scrollbar {
+                display: none;
+            }
+            #swipe-img {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 200px;
+                height: 200px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            #swipe-img svg {
+                width: 80%;
+                height: 80%;
+                margin-top: 10%;
+            }
+            .instructionText {
+                color: #727272;
+            }
+            #topInstruction {
+                display: flex;
+                margin: 15px 0px;
+            }
+            #topInstruction > span {
+                align-self: flex-end;
+            }
+            #swipe-canvas {
+                position: relative;
+                height: 25000px;
+                width: 25000px;
+                flex: 0 0 auto;
+            }
+            #center-span {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                height: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="flex">
+            <div class="instructionText" id="topInstruction">
+                <span>Swipe to navigate - Tap to select</span>
 
-      <div id="swipeArea">
-        <div id="swipe-canvas"><span id="center-span"></span></div>
-      </div>
+                <!-- FOR TESTING OUTPUT  -->
+                <span id="navigation-test">x: , y: </span>
+            </div>
 
-      <div class="connection-status-bar">
-        <span id="connection-status-text">No connection to display</span>
-      </div>
+            <div id="swipeArea">
+                <div id="swipe-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 1100 1100">
+                        <defs>
+                            <style>
+                                .cls-1 {
+                                    fill: #3b82f6;
+                                }
+                                .cls-2 {
+                                    fill: none;
+                                    stroke: #3b82f6;
+                                    stroke-miterlimit: 10;
+                                    stroke-width: 20px;
+                                }
+                            </style>
+                        </defs>
+                        <path
+                            class="cls-1"
+                            d="M316.42,187c2.06-.43,4.1-.93,6.18-1.27L335,183.51c8.29-1.48,16.52-3.13,24.88-4.24l25-3.66,2.7-.31c7.54-13.44,20.6-25.07,42.83-29.84,30.47-6.54,50.54,5.74,63.37,21.12,5.57-.24,11.14-.42,16.72-.5l12.59-.34c4.2-.08,8.38-.3,12.59-.24h37.79l12.6.35,25.19.66,6.29.17,6.3.36,12.59.67,25.17,1.3,50.3,3.91c8.37.88,16.73,1.8,25.11,2.62s16.75,1.63,25.11,2.57l25.06,3.22A22.23,22.23,0,0,0,800.36,178a36.83,36.83,0,0,0,3.51-2.38c.6-.47,1.19-.93,1.8-1.49s1.21-1,1.83-1.67a50.37,50.37,0,0,0,3.77-4.06c.64-.74,1.29-1.59,2-2.47l1-1.42.5-.72.52-.81.86-6.18-.28-.91-.29-.82-.59-1.62c-.4-1-.8-2-1.23-2.87a46.84,46.84,0,0,0-2.58-4.86c-.44-.78-.9-1.37-1.35-2.06s-.91-1.29-1.37-1.89a35.56,35.56,0,0,0-2.84-3.17,22.8,22.8,0,0,0-12.22-6.52l-25.75-3.14q-25.83-2.53-51.71-4.71c-8.64-.57-17.29-1-25.94-1.53s-17.29-1-25.94-1.35l-26-.57-13-.27-6.5-.11-6.51.09-26,.36c-4.33.06-8.67.11-13,.22l-13,.65L534,123l-3.25.16c-1.08.07-2.16.18-3.24.27l-6.49.56-13,1.12-13,1.12c-2.16.2-4.32.35-6.48.59l-6.47.78-25.84,3.17c-2.15.27-4.3.51-6.45.81l-6.43,1-12.86,2C422,136,413.47,137.23,405,139l-25.53,5-25.36,5.82c-8.47,1.83-16.82,4.21-25.2,6.41l-12.55,3.34c-2.1.53-4.16,1.2-6.24,1.82l-6.22,1.88a834.28,834.28,0,0,0-97.51,35.45L194.53,204l-5.9,2.67-2.95,1.34-2.91,1.43-11.61,5.73-5.8,2.86-5.71,3-11.41,6.1c-1.91,1-3.77,2.1-5.64,3.17l-5.6,3.23c-7.51,4.22-14.81,8.83-22.14,13.33-14.52,9.27-28.66,19.12-42.23,29.69l-5.05,4c-.84.67-1.69,1.33-2.52,2l-2.47,2.08-4.93,4.15c-1.64,1.39-3.22,2.85-4.83,4.27s-3.21,2.85-4.77,4.35-3.15,2.92-4.67,4.45-3.08,3-4.55,4.59a26.79,26.79,0,0,0-4,5.18l1.45,1.3c3.58-2.37,6.51-5.42,9.76-8.15,1.58-1.4,3.25-2.72,4.87-4.08s3.29-2.67,5-4,3.32-2.63,5-3.9L66,289.17l2.55-1.89c.86-.62,1.74-1.22,2.6-1.82l5.22-3.63a503.5,503.5,0,0,1,43.44-26.33,654.67,654.67,0,0,1,92.91-40.4,792.33,792.33,0,0,1,97.49-26.72Z"
+                            transform="translate(-34.88 -120.4)"
+                        />
+                        <path
+                            class="cls-2"
+                            d="M1006.48,528.39C991.13,457.56,938.59,419.58,861,414.9c-.5,0-11.24,38.88-11.73,38.79-.73-.12-14.18-43.47-14.86-43.77-34.22-15.41-61.81-18.83-98.73-9.49-1.6.4-13.12,43.41-14.75,43.48C719,444,705.6,402.8,703.84,402c-31.38-14.68-54.15-15.12-72.25-11.2-55.08,11.94-55.84,52.36-57.88,67.58-.92,6.82,7.09,53.61,7.61,63.55a1.59,1.59,0,0,1-3.15.42L548.38,384.82l-7.09-32.71-31.07-143.4s-16.9-78-84.83-63.27-51,92.71-51,92.71l31.07,143.4,7.09,32.71,23.3,107.51,16,73.63,21.34,98.49a1.6,1.6,0,0,1-2.41,1.69L419,663.08s-109.65-68.43-153.76-16.73-6.83,77.18-6.83,77.18L410.6,830.85l102.55,72.51.17.14c3.09,2.93,103.09,96.1,301.2,53.17C1015.8,913.06,1038.27,834.44,1044.85,804s1-92.42-8.77-137.7l-.51-2.33h.28Z"
+                            transform="translate(-34.88 -120.4)"
+                        />
+                    </svg>
+                </div>
+                <div id="swipe-canvas">
+                    <span id="center-span"></span>
+                </div>
+            </div>
 
-      <div id="error-msg"></div>
-    </div>
-  </body>
-  <script src="/socket.io/socket.io.js"></script>
-  <script type="text/javascript">
-    // document.addEventListener('touchmove', function(event){
-    //   event.preventDefault();
-    // });
+            <div class="connection-status-bar">
+                <span id="connection-status-text">No connection to display</span>
+            </div>
 
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const id = urlParams.get("id");
-    const errEl = document.getElementById("error-msg");
-    const scrollWrapper = document.getElementById("swipeArea");
-    const scrollCanvas = document.getElementById("swipe-canvas");
-    const centerSpan = document.getElementById("center-span");
-    const goToCenter = () =>
-      centerSpan.scrollIntoView({ block: "center", inline: "center" });
-    goToCenter();
-    document
-      .getElementById("connection-status-text")
-      .scrollIntoView({ block: "start" });
+            <div id="error-msg"></div>
+        </div>
+    </body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        // document.addEventListener('touchmove', function(event){
+        //   event.preventDefault();
+        // });
 
-    const MOVETHRESHOLD = 45;
-    const LEFTSTART = scrollWrapper.scrollLeft;
-    const TOPSTART = scrollWrapper.scrollTop;
-    const TAP_MARGRIN_OF_ERROR = 8;
-    const SCROLLMULTIPLIER = 5;
-    const MULTIPLEMOVEMULTIPLIER = 1.8;
-    const VIBRATE_MS = 200;
-    let oldLeft = LEFTSTART;
-    let oldTop = TOPSTART;
-    let timer = null;
-    let touching = false;
-    let toFastTimer = null;
-    let firstMove = true;
+        const navigationTest = document.getElementById('navigation-test');
 
-    const resetCanvas = () => {
-      oldLeft = LEFTSTART;
-      oldTop = TOPSTART;
-      goToCenter();
-      firstMove = true;
-      timer = null;
-    };
-    function vib(){
-      navigator.vibrate(VIBRATE_MS);
-    }
-    scrollWrapper.addEventListener("scroll", function (e) {
-      const newLeft = e.currentTarget.scrollLeft;
-      const newTop = e.currentTarget.scrollTop;
-      // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER; 
-      const multipler = firstMove ? 1 : (touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER);
-      const thres = MOVETHRESHOLD * multipler;
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const id = urlParams.get('id');
+        const errEl = document.getElementById('error-msg');
+        const scrollWrapper = document.getElementById('swipeArea');
+        const scrollCanvas = document.getElementById('swipe-canvas');
+        const centerSpan = document.getElementById('center-span');
+        const goToCenter = () => centerSpan.scrollIntoView({ block: 'center', inline: 'center' });
+        goToCenter();
+        document.getElementById('connection-status-text').scrollIntoView({ block: 'start' });
 
-      let key = '';
+        const MOVETHRESHOLD = 45;
+        const SCROLLMULTIPLIER = 5;
+        const MULTIPLEMOVEMULTIPLIER = 1.8;
 
-      if (newLeft - oldLeft > thres) {
-        oldLeft = newLeft;
-        key = "ArrowLeft";
-      }
-      else if (oldLeft - newLeft > thres) {
-        oldLeft = newLeft;
-        key = "ArrowRight";
-      }
-      if (newTop - oldTop > thres) {
-        oldTop = newTop;
-        key = "ArrowUp";
-      }
-      else if (oldTop - newTop > thres) {
-        oldTop = newTop;
-        key = "ArrowDown";
-      }
+        const CURSOR_MOVETHRESHOLD = 10;
+        const CURSOR_SCROLLMULTIPLIER = 1; // 10
+        const CURSOR_MULTIPLEMOVEMULTIPLIER = 1; // 5
 
-      if(key.length > 0){
-        firstMove = false;
-        socket.emit("register key", { key });
-      }
+        const LEFTSTART = scrollWrapper.scrollLeft;
+        const TOPSTART = scrollWrapper.scrollTop;
+        const TAP_MARGIN_OF_ERROR = 8;
+        const VIBRATE_MS = 200;
+        let oldLeft = LEFTSTART;
+        let oldTop = TOPSTART;
+        let timer = null;
+        let touching = false;
+        let toFastTimer = null;
+        let firstMove = true;
 
-      if (timer !== null) {
-        clearTimeout(timer);
-      }
-      timer = setTimeout(resetCanvas, 150);
-    });
+        let interactionType = '';
 
-    let touchX = null;
-    let touchY = null;
+        const resetCanvas = () => {
+            oldLeft = LEFTSTART;
+            oldTop = TOPSTART;
+            goToCenter();
+            firstMove = true;
+            timer = null;
+        };
+        function vib() {
+            navigator.vibrate(VIBRATE_MS);
+        }
+        scrollWrapper.addEventListener('scroll', function (e) {
+            const newLeft = e.currentTarget.scrollLeft;
+            const newTop = e.currentTarget.scrollTop;
+            // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER;
 
-    scrollWrapper.addEventListener("touchstart", function (e) {
-      touching = true;
+            // SWIPE NAVIGATION FOR HIGHLIGHT INTERACTION TYPE
+            if (interactionType === 'highlighter') {
+                const multipler = firstMove ? 1 : touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER;
+                const thres = MOVETHRESHOLD * multipler;
+                let key = '';
 
-      touchX = e.targetTouches[0].clientX;
-      touchY = e.targetTouches[0].clientY;
-    });
+                if (newLeft - oldLeft > thres) {
+                    oldLeft = newLeft;
+                    key = 'ArrowLeft';
+                } else if (oldLeft - newLeft > thres) {
+                    oldLeft = newLeft;
+                    key = 'ArrowRight';
+                }
+                if (newTop - oldTop > thres) {
+                    oldTop = newTop;
+                    key = 'ArrowUp';
+                } else if (oldTop - newTop > thres) {
+                    oldTop = newTop;
+                    key = 'ArrowDown';
+                }
 
-    scrollWrapper.addEventListener("touchend", function (e) {
-      touching = false;
-      const x = e.changedTouches[0].clientX;
-      const y = e.changedTouches[0].clientY;
+                if (key.length > 0) {
+                    firstMove = false;
+                    socket.emit('register key', { key });
+                }
+            }
 
-      const xIsSame = Math.abs(touchX - x) < TAP_MARGRIN_OF_ERROR;
-      const yIsSame = Math.abs(touchY - y) < TAP_MARGRIN_OF_ERROR;
-      if (xIsSame && yIsSame) {
-        socket.emit("register key", { key: "Enter" });
-      }
-    });
+            // SWIPE NAVIGATION FOR FREE CURSOR INTERACTION TYPE
+            if (interactionType === 'cursor') {
+                const compressor = 0.3;
+                const dropoffThres = 150;
+                const multipler = firstMove ? 1 : touching ? CURSOR_MULTIPLEMOVEMULTIPLIER : CURSOR_SCROLLMULTIPLIER;
+                const thres = CURSOR_MOVETHRESHOLD * multipler;
+                const isMoving = Math.abs(oldLeft - newLeft) > thres || Math.abs(oldTop - newTop) > thres;
+                let deltaX = 0,
+                    deltaY = 0;
 
-    var socket = io({
-      auth: {
-        token: id,
-      },
-    });
+                if (isMoving) {
+                    deltaX = Math.abs(oldLeft - newLeft) > dropoffThres ? (oldLeft - newLeft) * compressor : oldLeft - newLeft;
+                    deltaY = Math.abs(oldTop - newTop) > dropoffThres ? (oldTop - newTop) * compressor : oldTop - newTop;
+                }
+                // const deltaX =
+                //     Math.abs(oldLeft - newLeft) < thres
+                //         ? 0
+                //         : Math.abs(oldLeft - newLeft) > dropoffThres
+                //         ? (oldLeft - newLeft) * compressor
+                //         : oldLeft - newLeft;
+                // const deltaY =
+                //     Math.abs(oldTop - newTop) < thres
+                //         ? 0
+                //         : Math.abs(oldTop - newTop) > dropoffThres
+                //         ? (oldTop - newTop) * compressor
+                //         : oldTop - newTop;
 
-    socket.on("connect", () => {
-      if (socket.connected) {
-        socket.emit("join room");
-      }
-    });
-    socket.on("error", ({ msg }) => {
-      errEl.innerHTML = `
+                // FOR TESTING OUTPUT
+                navigationTest.innerText = `x: ${deltaX.toFixed()}, y: ${deltaY.toFixed()}`;
+
+                if (deltaX !== 0 || deltaY !== 0) {
+                    firstMove = false;
+                    socket.emit('register cursor move', { deltaX, deltaY });
+                }
+            }
+
+            if (timer !== null) {
+                clearTimeout(timer);
+            }
+            timer = setTimeout(resetCanvas, 150);
+        });
+
+        let touchX = null;
+        let touchY = null;
+
+        scrollWrapper.addEventListener('touchstart', function (e) {
+            touching = true;
+
+            touchX = e.targetTouches[0].clientX;
+            touchY = e.targetTouches[0].clientY;
+        });
+
+        scrollWrapper.addEventListener('touchend', function (e) {
+            touching = false;
+            const x = e.changedTouches[0].clientX;
+            const y = e.changedTouches[0].clientY;
+
+            const xIsSame = Math.abs(touchX - x) < TAP_MARGIN_OF_ERROR;
+            const yIsSame = Math.abs(touchY - y) < TAP_MARGIN_OF_ERROR;
+            if (xIsSame && yIsSame) {
+                socket.emit('register key', { key: 'Enter' });
+            }
+        });
+
+        var socket = io({
+            auth: {
+                token: id,
+            },
+        });
+
+        socket.on('connect', () => {
+            if (socket.connected) {
+                socket.emit('join room');
+            }
+        });
+        socket.on('error', ({ msg }) => {
+            errEl.innerHTML = `
                 <h1>
                     <span>ERROR:</span> <br>
                     ${msg}
                 </h1>`;
-      errEl.style.display = "flex";
-      // socket.disconnect();
-    });
-    socket.on("finished", () => {
-      const msg = "Thank you for participating!";
-      errEl.innerHTML = `
+            errEl.style.display = 'flex';
+            // socket.disconnect();
+        });
+        socket.on('finished', () => {
+            const msg = 'Thank you for participating!';
+            errEl.innerHTML = `
             <h1>
                 ${msg}
             </h1>`;
-      errEl.style.display = "flex";
-      socket.disconnect();
-    });
+            errEl.style.display = 'flex';
+            socket.disconnect();
+        });
 
-    socket.on("room size changed", (data) => {
-      const { users } = data;
-      let text = users > 1 ? "CONNECTED" : "DISCONNECTED";
-      const connectionEl = document.getElementById("connection-status-text");
-      connectionEl.innerHTML = text;
-      const toDo = users > 1 ? "add" : "remove";
-      connectionEl.classList[toDo]("connected");
-    });
+        socket.on('room size changed', (data) => {
+            const { users, type } = data;
+            console.log(type);
+            interactionType = type;
+            let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
+            const connectionEl = document.getElementById('connection-status-text');
+            connectionEl.innerHTML = text;
+            const toDo = users > 1 ? 'add' : 'remove';
+            connectionEl.classList[toDo]('connected');
+        });
 
-    function handleClick(e) {
-      socket.emit("register key", { key: e.target.value });
-    }
-  </script>
+        function handleClick(e) {
+            socket.emit('register key', { key: e.target.value });
+        }
+    </script>
 </html>
