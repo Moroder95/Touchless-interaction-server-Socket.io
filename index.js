@@ -11,9 +11,10 @@ let type = 'cursor';
 app.get('/main', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
-app.get('/phone?:id', (req, res) => {
+app.get('/phoneHighlight?:id', (req, res) => {
     res.sendFile(__dirname + '/phone.html');
 });
+
 app.get('/phoneTouchPad?:id', (req, res) => {
     res.sendFile(__dirname + '/phonetouchpad.html');
 });
