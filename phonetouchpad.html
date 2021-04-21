@@ -282,10 +282,7 @@
             socket.disconnect();
         });
 
-        socket.on('room size changed', (data) => {
-            const { users, type } = data;
-            console.log(type);
-            interactionType = type;
+        socket.on('room size changed', ( { users } ) => {
             let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
