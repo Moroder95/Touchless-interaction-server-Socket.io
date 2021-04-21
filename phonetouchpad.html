@@ -139,8 +139,6 @@
         <div class="flex">
             <div class="instruction-text" id="top-instruction">
                 <span>Swipe to navigate - Tap to select</span>
-                <span> - touchpad</span>
-                <p id="test-block">test</p>
             </div>
 
             <div id="swipe-area">
@@ -186,13 +184,13 @@
         const urlParams = new URLSearchParams(queryString);
         const id = urlParams.get('id');
         const errEl = document.getElementById('error-msg');
-        const testBlock = document.getElementById('test-block');
 
         const swipeArea = document.getElementById('swipe-area');
         const testOutput = document.getElementById('navigation-test');
 
         const TAP_MARGIN_OF_ERROR = 8;
 
+        // Setting swipeArea offset relative to screen
         const offsetX = swipeArea.offsetLeft;
         const offsetY = swipeArea.offsetTop;
 
@@ -228,13 +226,7 @@
                 const moveX = distFromFirstX - prevPos.x;
                 const moveY = distFromFirstY - prevPos.y;
 
-                // console.log('touchmove', 'x', moveX, 'y', moveY);
-
                 socket.emit('register cursor move', { deltaX: moveX, deltaY: moveY });
-
-                testBlock.innerText = 'within';
-            } else {
-                testBlock.innerText = 'outside';
             }
         };
 
