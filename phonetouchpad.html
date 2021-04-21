@@ -22,6 +22,7 @@
                 background-color: #e5e5e5;
                 -ms-overflow-style: none; /* IE and Edge */
                 scrollbar-width: none; /* Firefox */
+                overscroll-behavior: contain;
             }
             body::-webkit-scrollbar {
                 display: none;
@@ -32,6 +33,7 @@
                 flex-direction: column;
                 height: 100%;
                 width: 100%;
+                justify-content: space-between;
             }
             .flex > div {
                 display: flex;
@@ -67,11 +69,6 @@
             .flex .connection-status-bar > #connection-status-text.connected::after {
                 background: olivedrab;
             }
-            button {
-                height: 100%;
-                width: inherit;
-                font-size: 2rem;
-            }
             #error-msg {
                 position: absolute;
                 top: 0;
@@ -92,10 +89,11 @@
                 border-radius: 0.5rem;
                 box-shadow: 0 1px 3px rgb(0 0 0 / 12%), 0 1px 2px rgb(0 0 0 / 24%);
             }
-            #swipeArea {
+            #swipe-area {
                 /* position: relative; */
                 box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.24), 0px 0px 15px rgba(0, 0, 0, 0.12);
                 width: 96%;
+                height: 85%;
                 margin-left: 2%;
                 margin-top: 10px;
                 margin-right: 2%;
@@ -106,7 +104,7 @@
                 -ms-overflow-style: none; /* IE and Edge */
                 scrollbar-width: none; /* Firefox */
             }
-            #swipeArea::-webkit-scrollbar {
+            #swipe-area::-webkit-scrollbar {
                 display: none;
             }
             #swipe-img {
@@ -125,37 +123,27 @@
                 height: 80%;
                 margin-top: 10%;
             }
-            .instructionText {
+            .instruction-text {
                 color: #727272;
             }
-            #topInstruction {
+            #top-instruction {
                 display: flex;
                 margin: 15px 0px;
             }
-            #topInstruction > span {
+            #top-instruction > span {
                 align-self: flex-end;
-            }
-            #swipe-canvas {
-                position: relative;
-                height: 25000px;
-                width: 25000px;
-                flex: 0 0 auto;
-            }
-            #center-span {
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                height: 20px;
             }
         </style>
     </head>
     <body>
         <div class="flex">
-            <div class="instructionText" id="topInstruction">
+            <div class="instruction-text" id="top-instruction">
                 <span>Swipe to navigate - Tap to select</span>
+                <span> - touchpad</span>
+                <p id="test-block">test</p>
             </div>
 
-            <div id="swipeArea">
+            <div id="swipe-area">
                 <div id="swipe-img">
                     <svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" viewBox="0 0 1100 1100">
                         <defs>
@@ -183,9 +171,6 @@
                         />
                     </svg>
                 </div>
-                <div id="swipe-canvas">
-                    <span id="center-span"></span>
-                </div>
             </div>
 
             <div class="connection-status-bar">
@@ -197,107 +182,88 @@
     </body>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
-        // document.addEventListener('touchmove', function(event){
-        //   event.preventDefault();
-        // });
-
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const id = urlParams.get('id');
         const errEl = document.getElementById('error-msg');
-        const scrollWrapper = document.getElementById('swipeArea');
-        const scrollCanvas = document.getElementById('swipe-canvas');
-        const centerSpan = document.getElementById('center-span');
-        const goToCenter = () => centerSpan.scrollIntoView({ block: 'center', inline: 'center' });
-        goToCenter();
-        document.getElementById('connection-status-text').scrollIntoView({ block: 'start' });
+        const testBlock = document.getElementById('test-block');
 
-        const MOVETHRESHOLD = 45;
-        const SCROLLMULTIPLIER = 5;
-        const MULTIPLEMOVEMULTIPLIER = 1.8;
-        const LEFTSTART = scrollWrapper.scrollLeft;
-        const TOPSTART = scrollWrapper.scrollTop;
+        const swipeArea = document.getElementById('swipe-area');
+        const testOutput = document.getElementById('navigation-test');
+
         const TAP_MARGIN_OF_ERROR = 8;
-        const VIBRATE_MS = 200;
-        let oldLeft = LEFTSTART;
-        let oldTop = TOPSTART;
-        let timer = null;
-        let touching = false;
-        let toFastTimer = null;
-        let firstMove = true;
 
-        let interactionType = '';
-
-        const resetCanvas = () => {
-            oldLeft = LEFTSTART;
-            oldTop = TOPSTART;
-            goToCenter();
-            firstMove = true;
-            timer = null;
-        };
-        function vib() {
-            navigator.vibrate(VIBRATE_MS);
-        }
-        scrollWrapper.addEventListener('scroll', function (e) {
-            const newLeft = e.currentTarget.scrollLeft;
-            const newTop = e.currentTarget.scrollTop;
-            // const multipler = touching ? (firstMove ? 1 : MULTIPLEMOVEMULTIPLIER ) : SCROLLMULTIPLIER;
-            const multipler = firstMove ? 1 : touching ? MULTIPLEMOVEMULTIPLIER : SCROLLMULTIPLIER;
-            const thres = MOVETHRESHOLD * multipler;
-            let key = '';
-
-            if (newLeft - oldLeft > thres) {
-                oldLeft = newLeft;
-                key = 'ArrowLeft';
-            } else if (oldLeft - newLeft > thres) {
-                oldLeft = newLeft;
-                key = 'ArrowRight';
-            }
-            if (newTop - oldTop > thres) {
-                oldTop = newTop;
-                key = 'ArrowUp';
-            } else if (oldTop - newTop > thres) {
-                oldTop = newTop;
-                key = 'ArrowDown';
-            }
-
-            if (key.length > 0) {
-                firstMove = false;
-                socket.emit('register key', { key });
-            }
-
-            if (timer !== null) {
-                clearTimeout(timer);
-            }
-            timer = setTimeout(resetCanvas, 150);
-        });
-
-        let touchX = null;
-        let touchY = null;
-
-        scrollWrapper.addEventListener('touchstart', function (e) {
-            touching = true;
-
-            touchX = e.targetTouches[0].clientX;
-            touchY = e.targetTouches[0].clientY;
-        });
-
-        scrollWrapper.addEventListener('touchend', function (e) {
-            touching = false;
-            const x = e.changedTouches[0].clientX;
-            const y = e.changedTouches[0].clientY;
-
-            const xIsSame = Math.abs(touchX - x) < TAP_MARGIN_OF_ERROR;
-            const yIsSame = Math.abs(touchY - y) < TAP_MARGIN_OF_ERROR;
-            if (xIsSame && yIsSame) {
-                socket.emit('register key', { key: 'Enter' });
-            }
-        });
+        const offsetX = swipeArea.offsetLeft;
+        const offsetY = swipeArea.offsetTop;
 
         var socket = io({
             auth: {
                 token: id,
             },
+        });
+
+        const relativePos = (a, b) => {
+            return Math.ceil(a - b);
+        };
+
+        let touches = [];
+        let firstTouchPos = { x: 0, y: 0 };
+
+        const handleTouchMove = (e) => {
+            const touch = e.changedTouches[0];
+
+            const touchX = relativePos(touch.pageX, offsetX);
+            const touchY = relativePos(touch.pageY, offsetY);
+            const isWithinX = touchX > -1 && touchX < swipeArea.offsetWidth;
+            const isWithinY = touchY > -1 && touchY < swipeArea.offsetHeight;
+
+            if (isWithinX && isWithinY) {
+                let prevPos = touches[touches.length - 1] || { x: 0, y: 0 };
+
+                const distFromFirstX = touchX - firstTouchPos.x;
+                const distFromFirstY = touchY - firstTouchPos.y;
+
+                touches.push({ x: distFromFirstX, y: distFromFirstY });
+
+                const moveX = distFromFirstX - prevPos.x;
+                const moveY = distFromFirstY - prevPos.y;
+
+                // console.log('touchmove', 'x', moveX, 'y', moveY);
+
+                socket.emit('register cursor move', { deltaX: moveX, deltaY: moveY });
+
+                testBlock.innerText = 'within';
+            } else {
+                testBlock.innerText = 'outside';
+            }
+        };
+
+        swipeArea.addEventListener(
+            'touchstart',
+            (e) => {
+                const touchX = relativePos(e.touches[0].pageX, offsetX);
+                const touchY = relativePos(e.touches[0].pageY, offsetY);
+                firstTouchPos = { x: touchX, y: touchY };
+            },
+            { passive: true }
+        );
+
+        swipeArea.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+        swipeArea.addEventListener('touchend', (e) => {
+            const x = relativePos(e.changedTouches[0].pageX, offsetX);
+            const y = relativePos(e.changedTouches[0].pageY, offsetY);
+
+            const xIsSame = Math.abs(x - firstTouchPos.x) < TAP_MARGIN_OF_ERROR;
+            const yIsSame = Math.abs(y - firstTouchPos.y) < TAP_MARGIN_OF_ERROR;
+
+            if (xIsSame && yIsSame) {
+                socket.emit('register key', { key: 'Enter' });
+                console.log('enter key emit');
+            }
+
+            touches = [];
+            firstTouchPos = { x: 0, y: 0 };
         });
 
         socket.on('connect', () => {
@@ -325,17 +291,14 @@
         });
 
         socket.on('room size changed', (data) => {
-            const { users } = data;
+            const { users, type } = data;
             console.log(type);
+            interactionType = type;
             let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
             const toDo = users > 1 ? 'add' : 'remove';
             connectionEl.classList[toDo]('connected');
         });
-
-        function handleClick(e) {
-            socket.emit('register key', { key: e.target.value });
-        }
     </script>
 </html>

@@ -12,7 +12,7 @@ app.get('/main', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 app.get('/phone?:id', (req, res) => {
-    res.sendFile(__dirname + '/phone.html');
+    res.sendFile(__dirname + '/phonetouchpad.html');
 });
 
 app.get('/pclient.js', (req, res) => {
