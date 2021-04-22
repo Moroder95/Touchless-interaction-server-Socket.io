@@ -341,10 +341,13 @@
             event.preventDefault();
         });
         // Disable double tap zoom, in it's own scope
-      
-        document.addEventListener('touchend', function (event) {
-                event.preventDefault();
-        }, false);
 
+        document.addEventListener(
+            'touchend',
+            function (event) {
+                event.preventDefault();
+            },
+            false
+        );
     </script>
 </html>
