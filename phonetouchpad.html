@@ -136,7 +136,7 @@
         </style>
     </head>
     <body>
-        <div class="flex">
+        <div class="flex" id="container">
             <div class="instruction-text" id="top-instruction">
                 <span>Swipe to navigate - Tap to select</span>
             </div>
@@ -185,6 +185,7 @@
         const id = urlParams.get('id');
         const errEl = document.getElementById('error-msg');
 
+        const container = document.getElementById('container');
         const swipeArea = document.getElementById('swipe-area');
         const testOutput = document.getElementById('navigation-test');
 
@@ -258,11 +259,14 @@
             firstTouchPos = { x: 0, y: 0 };
         });
 
+        // SOCKET COMMUNICATION
+
         socket.on('connect', () => {
             if (socket.connected) {
                 socket.emit('join room');
             }
         });
+
         socket.on('error', ({ msg }) => {
             errEl.innerHTML = `
                 <h1>
@@ -272,6 +276,11 @@
             errEl.style.display = 'flex';
             // socket.disconnect();
         });
+
+        socket.on('change UI', ({ data }) => {
+            container.innerHTML = data;
+        });
+
         socket.on('finished', () => {
             const msg = 'Thank you for participating!';
             errEl.innerHTML = `
@@ -282,7 +291,7 @@
             socket.disconnect();
         });
 
-        socket.on('room size changed', ( { users } ) => {
+        socket.on('room size changed', ({ users }) => {
             let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;

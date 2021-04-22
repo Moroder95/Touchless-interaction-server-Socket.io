@@ -25,13 +25,10 @@ app.get('/pclient.js', (req, res) => {
 
 io.on('connection', (socket) => {
     const roomID = socket.handshake.auth.token;
-    // const roomID = '123231';
     let inRoom = false;
 
     socket.on('initialize room', () => {
         socket.join(roomID);
-        // type = socket.handshake.auth.type;
-        // console.log(type);
         rooms[roomID] = rooms[roomID] === undefined ? 1 : rooms[roomID] + 1;
         roomsHosts[roomID] = socket.id;
         inRoom = true;
@@ -80,6 +77,9 @@ io.on('connection', (socket) => {
     });
     socket.on('register cursor move', ({ deltaX, deltaY }) => {
         io.to(roomID).emit('cursor move', { deltaX, deltaY });
+    });
+    socket.on('hello world', ({ data }) => {
+        io.to(roomID).emit('change UI', { data });
     });
 });
 

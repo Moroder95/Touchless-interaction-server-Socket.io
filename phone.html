@@ -150,7 +150,7 @@
         </style>
     </head>
     <body>
-        <div class="flex">
+        <div class="flex" id="container">
             <div class="instructionText" id="topInstruction">
                 <span>Swipe to navigate - Tap to select</span>
             </div>
@@ -204,6 +204,7 @@
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const id = urlParams.get('id');
+        const container = document.getElementById('container');
         const errEl = document.getElementById('error-msg');
         const scrollWrapper = document.getElementById('swipeArea');
         const scrollCanvas = document.getElementById('swipe-canvas');
@@ -294,6 +295,8 @@
             }
         });
 
+        // SOCKET COMMUNICATION
+
         var socket = io({
             auth: {
                 token: id,
@@ -305,6 +308,7 @@
                 socket.emit('join room');
             }
         });
+
         socket.on('error', ({ msg }) => {
             errEl.innerHTML = `
                 <h1>
@@ -314,13 +318,9 @@
             errEl.style.display = 'flex';
             // socket.disconnect();
         });
-        socket.on('finished', () => {
-            const msg = 'Thank you for participating!';
-            errEl.innerHTML = `
-            <h1>
-                ${msg}
-            </h1>`;
-            errEl.style.display = 'flex';
+
+        socket.on('change UI', ({ data }) => {
+            container.innerHTML = data;
             socket.disconnect();
         });
 
