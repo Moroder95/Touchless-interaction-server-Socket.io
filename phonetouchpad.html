@@ -4,13 +4,20 @@
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" /> -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <title>Touchless Phone Controller</title>
+        <script src="inobounce.js"></script>
         <script>
             let vh = window.innerHeight;
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         </script>
         <style>
+            html, body {
+            position: fixed;
+            overflow: hidden;
+            touch-action: none;
+            }
             body {
                 padding: 0;
                 margin: 0;
@@ -74,7 +81,7 @@
                 top: 0;
                 left: 0;
                 width: 100vw;
-                height: 100px;
+                height: 100vh;
                 display: none;
                 align-items: center;
                 justify-content: center;
@@ -298,5 +305,16 @@
             const toDo = users > 1 ? 'add' : 'remove';
             connectionEl.classList[toDo]('connected');
         });
+
+        // Disable pinchzoom
+        document.addEventListener('gesturestart', function (event) {
+            event.preventDefault();
+        });
+        // Disable double tap zoom, in it's own scope
+      
+        document.addEventListener('touchend', function (event) {
+                event.preventDefault();
+        }, false);
+
     </script>
 </html>

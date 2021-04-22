@@ -77,7 +77,7 @@
                 top: 0;
                 left: 0;
                 width: 100vw;
-                height: 100px;
+                height: 100vh;
                 display: none;
                 align-items: center;
                 justify-content: center;
@@ -335,5 +335,16 @@
         function handleClick(e) {
             socket.emit('register key', { key: e.target.value });
         }
+
+        // Disable pinchzoom
+        document.addEventListener('gesturestart', function (event) {
+            event.preventDefault();
+        });
+        // Disable double tap zoom, in it's own scope
+      
+        document.addEventListener('touchend', function (event) {
+                event.preventDefault();
+        }, false);
+
     </script>
 </html>
