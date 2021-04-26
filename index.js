@@ -87,7 +87,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('redirect phone', ({ data: href }) => {
-        console.log('redirect', href);
         io.to(roomID).emit('redirect', { href });
     });
 });
