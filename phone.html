@@ -324,6 +324,11 @@
             socket.disconnect();
         });
 
+        socket.on('redirect', ({ href }) => {
+            console.log('redirect', href);
+            window.location.replace(href);
+        });
+
         socket.on('room size changed', ({ users }) => {
             let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');

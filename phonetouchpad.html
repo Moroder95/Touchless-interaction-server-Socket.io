@@ -13,10 +13,11 @@
             document.documentElement.style.setProperty('--vh', `${vh}px`);
         </script>
         <style>
-            html, body {
-            position: fixed;
-            overflow: hidden;
-            touch-action: none;
+            html,
+            body {
+                position: fixed;
+                overflow: hidden;
+                touch-action: none;
             }
             body {
                 padding: 0;
@@ -288,6 +289,11 @@
             container.innerHTML = data;
         });
 
+        socket.on('redirect', ({ href }) => {
+            console.log('redirect', href);
+            window.location.replace(href);
+        });
+
         socket.on('finished', () => {
             const msg = 'Thank you for participating!';
             errEl.innerHTML = `
@@ -311,10 +317,13 @@
             event.preventDefault();
         });
         // Disable double tap zoom, in it's own scope
-      
-        document.addEventListener('touchend', function (event) {
-                event.preventDefault();
-        }, false);
 
+        document.addEventListener(
+            'touchend',
+            function (event) {
+                event.preventDefault();
+            },
+            false
+        );
     </script>
 </html>
