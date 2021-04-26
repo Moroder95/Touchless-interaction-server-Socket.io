@@ -57,6 +57,7 @@ io.on('connection', (socket) => {
         const msg = 'Host has disconnected';
         io.to(roomID).emit('error', { msg });
     });
+
     socket.on('disconnecting', (newSocket) => {
         if (inRoom) {
             const users = (rooms[roomID] -= 1);
@@ -72,14 +73,22 @@ io.on('connection', (socket) => {
             io.to(roomID).emit('room size changed', { users });
         }
     });
+
     socket.on('register key', ({ key }) => {
         io.to(roomID).emit('key event', { key });
     });
+
     socket.on('register cursor move', ({ deltaX, deltaY }) => {
         io.to(roomID).emit('cursor move', { deltaX, deltaY });
     });
-    socket.on('hello world', ({ data }) => {
+
+    socket.on('update phone UI', ({ data }) => {
         io.to(roomID).emit('change UI', { data });
+    });
+
+    socket.on('redirect phone', ({ data: href }) => {
+        console.log('redirect', href);
+        io.to(roomID).emit('redirect', { href });
     });
 });
 
