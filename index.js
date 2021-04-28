@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
     let inRoom = false;
 
     socket.on('initialize room', () => {
-        if(rooms[roomID] >= 2 && roomsID in roomsHosts){
+        if(rooms[roomID] >= 1 && roomsID in roomsHosts){
             socket.disconnect();
             return
         }
