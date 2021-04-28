@@ -6,6 +6,7 @@ const io = require('socket.io')(http, {
 });
 const rooms = {};
 const roomsHosts = {};
+const roomCustomKeys = {};
 let type = 'cursor';
 
 app.get('/main', (req, res) => {
@@ -73,6 +74,7 @@ io.on('connection', (socket) => {
 
             if (users === 0) {
                 delete rooms[roomID];
+                delete roomCustomKeys[roomID];
             }
 
             io.to(roomID).emit('room size changed', { users });
@@ -80,7 +82,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('register key', ({ key }) => {
-        io.to(roomID).emit('key event', { key });
+        const objKey = key === "click" ? "Enter" : 'swipe'+ key.substr('Arrow'.length);
+
+        if(roomCustomKeys[roomID] && objKey in roomCustomKeys[roomID]){
+            io.to(roomID).emit('key event', { key: roomCustomKeys[roomID][objKey] });
+        }else{
+            io.to(roomID).emit('key event', { key });
+        }
     });
 
     socket.on('register cursor move', ({ deltaX, deltaY }) => {
@@ -94,9 +102,16 @@ io.on('connection', (socket) => {
     socket.on('redirect phone', ({ data: href }) => {
         io.to(roomID).emit('redirect', { href });
     });
+    socket.on('set custom keys', (data)=>{
+        if(Object.entries(data).length < 1){
+           delete roomCustomKeys[roomID];
+        } else{
+            roomCustomKeys[roomID] = data;
+        }
+    })
 });
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 http.listen(port, () => {
     console.log(`listening on *:${port}`);
 });
