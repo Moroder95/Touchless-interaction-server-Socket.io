@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
         io.to(roomID).emit('change UI', { data });
     });
 
-    socket.on('redirect phone', ({ data: href }) => {
+    socket.on('redirect phone', (href) => {
         io.to(roomID).emit('redirect', { href });
     });
     socket.on('set custom keys', (data)=>{
