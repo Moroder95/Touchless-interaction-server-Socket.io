@@ -327,13 +327,18 @@
         socket.on('redirect', ({ href }) => {
             window.location.replace(href);
         });
-
+        let userslol = 0
         socket.on('room size changed', ({ users }) => {
             let text = users > 1 ? 'CONNECTED' : 'HOST DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
-            const toDo = users > 1 ? 'add' : 'remove';
-            connectionEl.classList[toDo]('connected');
+            const removeOrAdd = users > 1 ? 'add' : 'remove';
+            userslol = users;
+            console.log('users before timeout: ' + users)
+            setTimeout(()=>{
+                console.log('after a second: '+ userslol)
+            }, 1000)
+            connectionEl.classList[removeOrAdd ]('connected');;
         });
         
         socket.on('disconnect', ()=>{

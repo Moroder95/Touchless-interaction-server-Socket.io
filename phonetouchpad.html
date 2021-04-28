@@ -307,8 +307,8 @@
             let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
-            const toDo = users > 1 ? 'add' : 'remove';
-            connectionEl.classList[toDo]('connected');
+            const removeOrAdd = users > 1 ? 'add' : 'remove';
+            connectionEl.classList[removeOrAdd ]('connected');
         });
 
         // Disable pinchzoom
