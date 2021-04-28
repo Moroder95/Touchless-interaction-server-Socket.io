@@ -324,6 +324,10 @@
         //     socket.disconnect();
         // });
 
+        socket.on('redirect', ({ href }) => {
+            window.location.replace(href);
+        });
+
         socket.on('room size changed', ({ users }) => {
             let text = users > 1 ? 'CONNECTED' : 'HOST DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
@@ -348,10 +352,13 @@
             event.preventDefault();
         });
         // Disable double tap zoom, in it's own scope
-      
-        document.addEventListener('touchend', function (event) {
-                event.preventDefault();
-        }, false);
 
+        document.addEventListener(
+            'touchend',
+            function (event) {
+                event.preventDefault();
+            },
+            false
+        );
     </script>
 </html>
