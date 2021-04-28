@@ -319,17 +319,24 @@
             // socket.disconnect();
         });
 
-        socket.on('change UI', ({ data }) => {
-            container.innerHTML = data;
-            socket.disconnect();
-        });
+        // socket.on('change UI', ({ data }) => {
+        //     container.innerHTML = data;
+        //     socket.disconnect();
+        // });
 
         socket.on('room size changed', ({ users }) => {
-            let text = users > 1 ? 'CONNECTED' : 'DISCONNECTED';
+            let text = users > 1 ? 'CONNECTED' : 'HOST DISCONNECTED';
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
             const toDo = users > 1 ? 'add' : 'remove';
             connectionEl.classList[toDo]('connected');
+        });
+        
+        socket.on('disconnect', ()=>{
+            let text = 'DISCONNECTED';
+            const connectionEl = document.getElementById('connection-status-text');
+            connectionEl.innerHTML = text;
+            connectionEl.classList.remove('connected');
         });
 
         function handleClick(e) {

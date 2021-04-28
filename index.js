@@ -28,6 +28,9 @@ io.on('connection', (socket) => {
     let inRoom = false;
 
     socket.on('initialize room', () => {
+        if(rooms[roomID] >= 2){
+            return
+        }
         socket.join(roomID);
         rooms[roomID] = rooms[roomID] === undefined ? 1 : rooms[roomID] + 1;
         roomsHosts[roomID] = socket.id;
