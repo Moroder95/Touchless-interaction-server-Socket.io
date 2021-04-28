@@ -108,6 +108,7 @@ io.on('connection', (socket) => {
         } else{
             roomCustomKeys[roomID] = data;
         }
+        socket.disconnect();
     })
 });
 
