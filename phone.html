@@ -333,11 +333,6 @@
             const connectionEl = document.getElementById('connection-status-text');
             connectionEl.innerHTML = text;
             const removeOrAdd = users > 1 ? 'add' : 'remove';
-            userslol = users;
-            console.log('users before timeout: ' + users)
-            setTimeout(()=>{
-                console.log('after a second: '+ userslol)
-            }, 1000)
             connectionEl.classList[removeOrAdd ]('connected');;
         });
         
